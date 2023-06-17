@@ -1,13 +1,14 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 
-namespace masterComfigHUDManagment
+namespace masterComfigHUDManagement
 {
     internal class start
     {
 
         private static void Main()
         {
+            Console.Title = "HUDManager";
 #if AUTOUPDATE
             Program instance = new Program();
             string documentsFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);

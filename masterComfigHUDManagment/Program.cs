@@ -3,7 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Text.Json;
 
-namespace masterComfigHUDManagment
+namespace masterComfigHUDManagement
 {
     public class Program //this is used when a HUD is to be cloned
     {

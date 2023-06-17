@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Configurations>Debug;Release;AUTOUPDATE;NORMAL</Configurations>
-    <StartupObject>masterComfigHUDManagment.start</StartupObject>
+    <StartupObject>masterComfigHUDManagement.start</StartupObject>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
