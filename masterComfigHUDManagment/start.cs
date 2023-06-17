@@ -19,13 +19,14 @@ namespace masterComfigHUDManagment
 
                 instance.userTf2FolderPath = filePaths[0];
                 instance.dbFilePath = filePaths[1];
+                instance.tf2args = filePaths[2];
 
             }
             try
             {
 
                 instance.Update();
-                Process.Start(instance.userTf2FolderPath+"\\hl2.exe", "-steam -game tf");
+                Process.Start(instance.userTf2FolderPath+"\\hl2.exe", "-steam -game tf "+instance.tf2args);
             }
             catch (Exception ex)
             {

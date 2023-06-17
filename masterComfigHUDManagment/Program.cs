@@ -9,6 +9,7 @@ namespace masterComfigHUDManagment
     {
         public string dbFilePath;
         public string userTf2FolderPath;
+        public string tf2args;
 
         public void NormalStart()
         {
@@ -47,6 +48,12 @@ namespace masterComfigHUDManagment
             Console.WriteLine("What is your database directory (must contain hud-data folder)");
             dbFilePath = Console.ReadLine();
 
+            Console.WriteLine("If you have any, what tf2 args do you use (type in this format-novid -noborder or press enter)");
+            tf2args = Console.ReadLine();
+            if (tf2args.Length == 0) //empty variable means the program goes out of bounds when looking for an argument, this way it doesnt break
+            {
+                tf2args = " ";
+            }
 
             //find users documents folder, then creates the configuration file
             string configFolderFilePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\HUDManagment";
@@ -56,6 +63,7 @@ namespace masterComfigHUDManagment
             {
                 writer.WriteLine(userTf2FolderPath);
                 writer.WriteLine(dbFilePath);
+                writer.WriteLine(tf2args);
             }
 
 
