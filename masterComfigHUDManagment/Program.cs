@@ -80,6 +80,7 @@ namespace masterComfigHUDManagment
             Console.WriteLine("#1| Install a new HUD");
             Console.WriteLine("#2| Check for / update current HUD");
             Console.WriteLine("#3| Uninstall current HUD");
+            Console.WriteLine("#4| Reset config");
 
             string userInput = Console.ReadLine();
 
@@ -121,6 +122,16 @@ namespace masterComfigHUDManagment
                     }
                     mainMenu();
                     break;
+                case "4":
+                    string configFolderFilePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\HUDManagment";
+                    Directory.CreateDirectory(configFolderFilePath);
+                    string configFilePath = configFolderFilePath + "\\config.config";
+                    File.Delete(configFilePath);
+                    Console.WriteLine("Config file deleted, going to first time set-up");
+                    firstTimeSetUp();
+                    mainMenu();
+                    break;
+                    
             }
         }
 
