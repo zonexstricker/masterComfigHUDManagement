@@ -1,4 +1,5 @@
 ﻿using LibGit2Sharp;
+using System;
 using System.Diagnostics;
 using System.Text.Json;
 
@@ -8,20 +9,27 @@ namespace masterComfigHUDManagment
     {
         public string dbFilePath;
         public string userTf2FolderPath;
+
+        public void NormalStart()
+        {
+            Main();
+        }
         private static void Main()
         {
-
+            
 
             Program instance = new Program();
             string documentsFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             bool fileExists = File.Exists(documentsFolderPath + "\\HUDManagment\\config.config");
-
-            if (fileExists)
+            
+            if (fileExists) //since the file exists it finds the two file paths (tf2 folder and database folder) from it and stores as variables
             {
                 string[] filePaths = File.ReadAllLines(documentsFolderPath + "\\HUDManagment\\config.config");
 
                 instance.userTf2FolderPath = filePaths[0];
                 instance.dbFilePath = filePaths[1];
+
+                
 
             }
             else
@@ -35,8 +43,12 @@ namespace masterComfigHUDManagment
         {
             Console.WriteLine("What is your tf2 directory (ends in ...|steamapps|common|Team Fortress 2");
             userTf2FolderPath = Console.ReadLine(); //TODO: Validation & verification
+
             Console.WriteLine("What is your database directory (must contain hud-data folder)");
             dbFilePath = Console.ReadLine();
+
+
+            //find users documents folder, then creates the configuration file
             string configFolderFilePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\HUDManagment";
             Directory.CreateDirectory(configFolderFilePath);
             string configFilePath = configFolderFilePath + "\\config.config";
@@ -45,6 +57,9 @@ namespace masterComfigHUDManagment
                 writer.WriteLine(userTf2FolderPath);
                 writer.WriteLine(dbFilePath);
             }
+
+
+
         }
         public string getCurrentHUDName()
         {
