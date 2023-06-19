@@ -77,6 +77,7 @@ namespace masterComfigHUDManagement
         }
         public void mainMenu()
         {
+            Console.Clear();
             Console.WriteLine("#1| Install a new HUD");
             Console.WriteLine("#2| Check for / update current HUD");
             Console.WriteLine("#3| Uninstall current HUD");
@@ -167,9 +168,16 @@ namespace masterComfigHUDManagement
                     Delete(userTf2FolderPath + "\\tf\\custom\\" + getCurrentHUDName()); //deletes the currently installed HUD 
                     Console.WriteLine("Old HUD has been deleted");
                 }
-
-                Clone(hudName, userTf2FolderPath + "\\tf\\custom\\" + hudName);
-
+                try
+                {
+                    Clone(hudName, userTf2FolderPath + "\\tf\\custom\\" + hudName);
+                }
+                catch 
+                {
+                    Console.WriteLine("This HUD does not exist in the available database, please ensure you have correctly entered the name of the HUD, or update the database. Returning to main menu.");
+                    Thread.Sleep(2000);
+                    mainMenu();
+                }
                 Console.WriteLine(hudName + " has been installed successfully!");
 
 
