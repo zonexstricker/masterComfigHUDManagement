@@ -1,7 +1,8 @@
 ﻿using LibGit2Sharp;
-using System;
+using SixLabors.ImageSharp.Formats.Webp;
 using System.Diagnostics;
 using System.Text.Json;
+
 
 namespace masterComfigHUDManagement
 {
@@ -17,12 +18,11 @@ namespace masterComfigHUDManagement
         }
         private static void Main()
         {
-            
 
             Program instance = new Program();
             string documentsFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             bool fileExists = File.Exists(documentsFolderPath + "\\HUDManagment\\config.config");
-            
+
             if (fileExists) //since the file exists it finds the two file paths (tf2 folder and database folder) from it and stores as variables
             {
                 string[] filePaths = File.ReadAllLines(documentsFolderPath + "\\HUDManagment\\config.config");
@@ -30,14 +30,14 @@ namespace masterComfigHUDManagement
                 instance.userTf2FolderPath = filePaths[0];
                 instance.dbFilePath = filePaths[1];
 
-                
+
 
             }
             else
             {
                 instance.firstTimeSetUp();
             }
-            instance.mainMenu();
+            instance.mainMenu(false);
         }
 
         public void firstTimeSetUp()
@@ -75,8 +75,9 @@ namespace masterComfigHUDManagement
             string currentHUD = File.ReadAllText(filepath);
             return currentHUD;
         }
-        public void mainMenu()
+        public void mainMenu(bool wait)
         {
+            if (wait) {Thread.Sleep(1000);}
             Console.Clear();
             Console.WriteLine("#1| Install a new HUD");
             Console.WriteLine("#2| Check for / update current HUD");
@@ -91,7 +92,7 @@ namespace masterComfigHUDManagement
             {
                 case "1":
                     InstallHUD(selectHUD());
-                    mainMenu();
+                    mainMenu(false);
                     break;
                 case "2":
                     if (hudInstalled)
@@ -102,10 +103,10 @@ namespace masterComfigHUDManagement
                     {
                         Console.WriteLine("Please install a HUD first.");
                     }
-                    mainMenu();
+                    mainMenu(false);
                     break;
                 case "3":
-                    
+
                     if (hudInstalled)
                     {
                         Console.WriteLine("Are you sure you want to uninstall the current HUD? (This action is irreversible) [Y] Yes, [N] No.");
@@ -114,14 +115,14 @@ namespace masterComfigHUDManagement
                         {
                             Delete(userTf2FolderPath + "\\tf\\custom\\" + getCurrentHUDName());
                         }
-                        else mainMenu();
+                        else mainMenu(false);
                     }
                     else
                     {
                         Console.WriteLine("No HUD installed."); //this can also happen if the hud.path file is missing but lets tackle that later.
-                         mainMenu();
+                        mainMenu(false);
                     }
-                    mainMenu();
+                    mainMenu(false);
                     break;
                 case "4":
                     string configFolderFilePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\HUDManagment";
@@ -130,9 +131,9 @@ namespace masterComfigHUDManagement
                     File.Delete(configFilePath);
                     Console.WriteLine("Config file deleted, going to first time set-up");
                     firstTimeSetUp();
-                    mainMenu();
+                    mainMenu(false);
                     break;
-                    
+
             }
         }
 
@@ -150,8 +151,57 @@ namespace masterComfigHUDManagement
             Console.WriteLine("Type in the name of the HUD you wish to install");
             string hudName;
             hudName = Console.ReadLine();
+            HUDDetails(hudName);
             return hudName;
         }
+
+        public void HUDDetails(string hudName)
+        {
+            string filePath = dbFilePath + "\\hud-data\\" + hudName + ".json";
+            //getting the imgur album link so the user is able to see screenshots of the HUD
+            try
+            {
+                string jsonContent = File.ReadAllText(filePath);
+                JsonDocument jsonDocument = JsonDocument.Parse(jsonContent);
+
+                //Extract the "album" entry
+                try
+                {
+                    JsonElement repoElement = jsonDocument.RootElement.GetProperty("social").GetProperty("album");
+                    string albumL = repoElement.GetString();
+                    Console.WriteLine(hudName + " has a imgur album, " + albumL);
+                }
+                catch
+                {
+                    //this happens when there is no album, no need for an error so just print nothing
+                }
+
+            }
+            catch
+            {
+                Console.WriteLine("This HUD does not exist in the available database, " +
+                         "please ensure you have correctly entered the name of the HUD, or update the database. " +
+                         "Returning to main menu.");
+
+                Thread.Sleep(1000);
+                bool wait = true;
+                mainMenu(wait);
+            }
+
+            //string resourcesPath = dbFilePath+ "\\hud-resources\\"+hudName;
+
+            //if (Directory.Exists(resourcesPath))
+            //{
+            //    Console.WriteLine("Would you like to open images related to " + hudName +" [Y] Yes, [N] No.");
+            //    string userInput = Console.ReadLine();
+            //    if (userInput.ToUpper() == "Y")
+            //    {
+
+            //    }
+
+            //}
+        }
+
 
         public void InstallHUD(string hudName)
         {
@@ -172,11 +222,15 @@ namespace masterComfigHUDManagement
                 {
                     Clone(hudName, userTf2FolderPath + "\\tf\\custom\\" + hudName);
                 }
-                catch 
+                catch
                 {
-                    Console.WriteLine("This HUD does not exist in the available database, please ensure you have correctly entered the name of the HUD, or update the database. Returning to main menu.");
-                    Thread.Sleep(2000);
-                    mainMenu();
+                    Console.WriteLine("This HUD does not exist in the available database, " +
+                        "please ensure you have correctly entered the name of the HUD, or update the database. " +
+                        "Returning to main menu.");
+
+                    Thread.Sleep(1000);
+                    bool wait = true;
+                    mainMenu(wait);
                 }
                 Console.WriteLine(hudName + " has been installed successfully!");
 
@@ -234,16 +288,7 @@ namespace masterComfigHUDManagement
         }
         public void Update()
         {
-            string filePath = dbFilePath + "\\hud-data\\" + getCurrentHUDName() + ".json";
-            //Clone(gitpath(based from the hudName, will need to lookup on the database), "tf2customfolder")
-            string jsonContent = File.ReadAllText(filePath);
-            JsonDocument jsonDocument = JsonDocument.Parse(jsonContent);
-
-            //Extract the "repo" entry
-            JsonElement repoElement = jsonDocument.RootElement.GetProperty("repo");
-            string gitPath = repoElement.GetString();
-
-
+            
             string HUDFilePath = userTf2FolderPath + "\\tf\\custom\\" + getCurrentHUDName();
 
             bool isUpToDate = IsRepoUpToDate(HUDFilePath);
@@ -251,6 +296,7 @@ namespace masterComfigHUDManagement
             if (isUpToDate)
             {
                 Console.WriteLine("The repository is up to date.");
+                Thread.Sleep(500);
             }
             else
             {
@@ -271,7 +317,7 @@ namespace masterComfigHUDManagement
 
         public void Delete(string HUDFilePath)
         {
-            
+
             try
             {
 
